@@ -1,0 +1,10 @@
+#!/usr/bin/stap
+
+# Simple watcher for opened files by <pid>.
+# <pid> is set as argument.
+
+probe syscall.open {
+    time = ctime(gettimeofday_s());
+    if (pid() == strtol(@1,10) )
+        printf("%s %s %d %s \n", time, execname(), pid(), filename);
+}
