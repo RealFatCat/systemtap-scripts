@@ -1,0 +1,17 @@
+#!/usr/bin/stap
+
+# Prints information about who send kills signals to processes
+
+probe begin {
+  printf("%-26s %-8s %-5s %-8s %-5s %-5s \n", "TIME", "SOURCE", "SPID", "TARGET", "TPID", "SIG");
+}
+
+probe syscall.kill.return {
+  sname = @entry(execname());
+  spid = @entry(pid());
+  sig = @entry(uint_arg(2));
+  tpid = @entry(uint_arg(1));
+  tname = pid2execname(tpid);
+  time = ctime(gettimeofday_s());
+  printf("%-26s %-8s %-5d %-8s %-5d %-5d \n", time, sname, spid, tname, tpid, sig);
+}
