@@ -1,0 +1,13 @@
+#!/usr/bin/env stap
+
+# Find who removes file.
+# arg1 and arg2 should be abs path and filename
+
+probe syscall.unlinkat
+{
+    if (pathname_str == @1 || pathname_str == @2)
+    {
+        time = ctime(gettimeofday_s());
+        printf ("%s\t%d deleted %s with %s(%d)\n", time, uid(), pathname_str, execname(), pid());
+    }
+}
